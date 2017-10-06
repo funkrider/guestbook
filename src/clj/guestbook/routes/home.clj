@@ -1,8 +1,9 @@
 (ns guestbook.routes.home
   (:require [guestbook.layout :as layout]
-            [compojure.core :refer [defroutes GET]]
+            [compojure.core :refer [defroutes GET POST]]
             [ring.util.http-response :as response]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [guestbook.db.core :as db]))
 
 (defn home-page []
   (layout/render
