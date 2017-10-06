@@ -8,10 +8,16 @@
   (layout/render
     "home.html" {:docs (-> "docs/docs.md" io/resource slurp)}))
 
+(defn save-message! [{:keys [params]}]
+  (db/save-message!
+   (assoc params :timestamp (java.util.Date.)))
+  (response/found "/"))
+
 (defn about-page []
   (layout/render "about.html"))
 
 (defroutes home-routes
   (GET "/" [] (home-page))
+  (POST "/message" request (save-message! request))
   (GET "/about" [] (about-page)))
 
