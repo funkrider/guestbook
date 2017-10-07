@@ -5,6 +5,7 @@
 pom.xml
 *.jar
 *.class
+*.db
 /.lein-*
 profiles.clj
 /.env

@@ -73,19 +73,30 @@
         [:div.span12
          [message-form2 messages]]]])))
 
+;; ---------------------------------------------------------------------------------------------------
+
+
+(defn send-message! [fields]
+  (POST "/message"
+        {:format :json
+         :headers {"Accept" "application/transit+json" "x-csrf-token" (.-value (.getElementById js/document "token"))}
+         :params @fields
+          :handler #(.log js/console (str "response: " %))
+          :error-handler #(.log js/console (str "error: " %))}))
+
 
 (defn message-form [messages]
   (let [fields (atom {})]
     (fn []
       [:div.content
        [:div.form-group
-        [:p "Name:"
+        [:p "Name:" (:name @fields)
          [:input.form-control
           {:type      :text
            :name      :name
            :on-change #(swap! fields assoc :name (-> % .-target .-value))
            :value     (:name @fields)}]]
-        [:p "Message:"
+        [:p "Message:" (:message @fields)
          [:textarea.form-control
           {:rows      4
            :cols      50
@@ -94,13 +105,13 @@
            :on-change #(swap! fields assoc :message (-> % .-target .-value))}]]
         [:input.btn.btn-primary
          {:type     :submit
-;;          :on-click #(send-message!2 fields errors messages)
+          :on-click #(send-message! fields)
           :value    "comment"}]]])))
 
 (defn home []
   [:div.row
    [:div.span12
-    [message-form]]])    
+    [message-form]]])
 
 (reagent/render
   [home]

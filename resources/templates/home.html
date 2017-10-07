@@ -1,4 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<div id="content"></div>
+<input id="token" type="hidden" value="{{csrf-token}}" /><!-- See handler.clj wraproutes -->
+<div id="content">
+</div>
 {% endblock %}
