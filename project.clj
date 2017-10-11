@@ -5,7 +5,8 @@
 
   :dependencies [[bouncer "1.0.1"]
                  [clj-time "0.14.0"]
-                 [cljs-ajax "0.5.2"] 
+                 [cljs-ajax "0.5.2"]
+                 [com.cognitect/transit-clj "0.8.300"]
                  [com.h2database/h2 "1.4.196"]
                  [compojure "1.6.0"]
                  [conman "0.6.8"]
@@ -30,6 +31,7 @@
                  [org.webjars/font-awesome "4.7.0"]
                  [org.webjars/jquery "3.2.1"]
                  [reagent "0.5.1"]
+                 [ring-middleware-format "0.7.2"]
                  [ring-webjars "0.2.0"]
                  [ring/ring-core "1.6.2"]
                  [ring/ring-defaults "0.3.1"]
