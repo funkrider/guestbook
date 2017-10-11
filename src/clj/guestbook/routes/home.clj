@@ -9,7 +9,7 @@
 
 (defn home-page []
   (layout/render
-    "home.html" {:docs (-> "docs/docs.md" io/resource slurp)}))
+    "home.html"))
 
 (defn validate-message [params]
   (first
