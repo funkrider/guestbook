@@ -30,6 +30,7 @@
                  [org.webjars/font-awesome "4.7.0"]
                  [org.webjars/jquery "3.2.1"]
                  [reagent "0.5.1"]
+                 [ring-middleware-format "0.7.0"]
                  [ring-webjars "0.2.0"]
                  [ring/ring-core "1.6.2"]
                  [ring/ring-defaults "0.3.1"]
