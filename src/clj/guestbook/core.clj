@@ -1,3 +1,11 @@
+;---
+; Excerpted from "Web Development with Clojure, Second Edition",
+; published by The Pragmatic Bookshelf.
+; Copyrights apply to this code. It may not be used to create training material,
+; courses, books, articles, and the like. Contact us if you are in doubt.
+; We make no guarantees that this code is fit for any purpose.
+; Visit http://www.pragmaticprogrammer.com/titles/dswdcloj2 for more book information.
+;---
 (ns guestbook.core
   (:require [guestbook.handler :as handler]
             [luminus.repl-server :as repl]
@@ -34,7 +42,6 @@
                 (when repl-server
                   (repl/stop repl-server)))
 
-
 (defn stop-app []
   (doseq [component (:stopped (mount/stop))]
     (log/info component "stopped"))
@@ -52,16 +59,11 @@
 
 (defn -main [& args]
   (cond
-    (some #{"init"} args)
-    (do
-      (mount/start #'guestbook.config/env)
-      (migrations/init (select-keys env [:database-url :init-script]))
-      (System/exit 0))
     (some #{"migrate" "rollback"} args)
     (do
       (mount/start #'guestbook.config/env)
-      (migrations/migrate args (select-keys env [:database-url]))
+      (migrations/migrate args (env :database-url))
       (System/exit 0))
     :else
-    (start-app args))
-  )
+    (start-app args)))
+

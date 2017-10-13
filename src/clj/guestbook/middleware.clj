@@ -1,19 +1,23 @@
+;---
+; Excerpted from "Web Development with Clojure, Second Edition",
+; published by The Pragmatic Bookshelf.
+; Copyrights apply to this code. It may not be used to create training material,
+; courses, books, articles, and the like. Contact us if you are in doubt.
+; We make no guarantees that this code is fit for any purpose.
+; Visit http://www.pragmaticprogrammer.com/titles/dswdcloj2 for more book information.
+;---
 (ns guestbook.middleware
-  (:require [guestbook.env :refer [defaults]]
-            [cognitect.transit :as transit]
+  (:require [guestbook.layout :refer [*app-context* error-page]]
             [clojure.tools.logging :as log]
-            [guestbook.layout :refer [*app-context* error-page]]
-            [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
-            [ring.middleware.webjars :refer [wrap-webjars]]
-            [muuntaja.core :as muuntaja]
-            [muuntaja.format.transit :as transit-format]
-            [muuntaja.middleware :refer [wrap-format wrap-params]]
+            [guestbook.env :refer [defaults]]
             [guestbook.config :refer [env]]
             [ring.middleware.flash :refer [wrap-flash]]
             [immutant.web.middleware :refer [wrap-session]]
-            [ring.middleware.defaults :refer [site-defaults wrap-defaults]])
-  (:import [javax.servlet ServletContext]
-           [org.joda.time ReadableInstant]))
+            [ring.middleware.webjars :refer [wrap-webjars]]
+            [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
+            [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
+            [ring.middleware.format :refer [wrap-restful-format]])
+  (:import [javax.servlet ServletContext]))
 
 (defn wrap-context [handler]
   (fn [request]
@@ -48,27 +52,10 @@
        {:status 403
         :title "Invalid anti-forgery token"})}))
 
-(def joda-time-writer
-  (transit/write-handler
-    (constantly "m")
-    (fn [v] (-> ^ReadableInstant v .getMillis))
-    (fn [v] (-> ^ReadableInstant v .getMillis .toString))))
-
-(def restful-format-options
-  (update
-    muuntaja/default-options
-    :formats
-    merge
-    {"application/transit+json"
-     {:decoder [(partial transit-format/make-transit-decoder :json)]
-      :encoder [#(transit-format/make-transit-encoder
-                   :json
-                   (merge
-                     %
-                     {:handlers {org.joda.time.DateTime joda-time-writer}}))]}}))
-
 (defn wrap-formats [handler]
-  (let [wrapped (-> handler wrap-params (wrap-format restful-format-options))]
+  (let [wrapped (wrap-restful-format
+                  handler
+                  {:formats [:json-kw :transit-json :transit-msgpack]})]
     (fn [request]
       ;; disable wrap-formats for websockets
       ;; since they're not compatible with this middleware
@@ -76,6 +63,7 @@
 
 (defn wrap-base [handler]
   (-> ((:middleware defaults) handler)
+      wrap-formats
       wrap-webjars
       wrap-flash
       (wrap-session {:cookie-attrs {:http-only true}})
